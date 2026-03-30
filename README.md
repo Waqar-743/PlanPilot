@@ -1,14 +1,18 @@
-# AI Travel Planner
+<p align="center">
+  <img src="./Screen.png" alt="PlanPilot AI screenshot" width="900" />
+</p>
 
-A premium AI-powered travel planning system that orchestrates multiple specialized agents to build comprehensive, realistic trip itineraries using real-time data.
+# PlanPilot
+
+A premium AI-powered Pakistan domestic travel planner that orchestrates specialized agents to build realistic overland trip itineraries with live supporting data.
 
 ---
 
 ## Overview
 
-AI Travel Planner uses a multi-agent architecture where a Root Agent coordinates four specialized sub-agents -- Weather, Flight, Hotel, and Local Expert -- to deliver end-to-end trip planning through a single conversational interface.
+AI Travel Planner now focuses strictly on **domestic Pakistan travel**. A Root Agent coordinates four active capabilities -- requirement gathering, weather checks, overland transport planning, hotel discovery, and local itinerary generation -- to deliver an end-to-end plan through a single conversational interface.
 
-The system gathers user requirements through natural conversation, dispatches agents in parallel for real-time data, and synthesizes everything into a polished travel plan with strict quality guardrails.
+The system gathers user requirements through natural conversation, dispatches supporting services in parallel, and synthesizes everything into a polished travel plan with strict guardrails and graceful fallbacks.
 
 ---
 
@@ -34,10 +38,11 @@ The system gathers user requirements through natural conversation, dispatches ag
                              |    |    |    |
               +--------------+    |    |    +---------------+
               |                   |    |                    |
-     +--------v-------+ +--------v--+ +--v--------+ +------v---------+
-     | Weather Agent   | |Flight Agent| |Hotel Agent| |Local Expert   |
-     | OpenWeatherMap  | |Amadeus API | |Amadeus API| |Gemini AI      |
-     +----------------+ +-----------+ +-----------+ +----------------+
+     +--------v-------+ +--------v----------+ +--v----------------+ +------v---------+
+     | Weather Agent   | |Overland Transport| |Hotel Agent         | |Local Expert   |
+     | OpenWeatherMap  | |Curated routes +  | |Foursquare + Groq   | |Groq LLM       |
+     |                 | |Groq fallback     | |fallback            | |               |
+     +----------------+ +-------------------+ +--------------------+ +----------------+
                                   |
                          +--------v----------+
                          |     Supabase      |
@@ -51,9 +56,11 @@ The system gathers user requirements through natural conversation, dispatches ag
 
 **Conversational Planning** -- Natural language interaction with smart follow-up questions. The system identifies missing requirements and asks a maximum of two clarifying questions before making assumptions and proceeding.
 
-**Real-Time Data** -- Live flight pricing and availability via Amadeus API, current weather forecasts via OpenWeatherMap, and hotel search with dynamic pricing.
+**Pakistan Domestic Focus** -- The planner is optimized for cities and tourist regions inside Pakistan only, with localized budget guidance, route context, and cultural recommendations.
 
-**Parallel Agent Execution** -- Weather, Flight, and Hotel agents run simultaneously using Python asyncio, reducing total response time to the duration of the slowest single agent call.
+**Live Supporting Data** -- Current weather comes from OpenWeatherMap, accommodation discovery uses Foursquare with an LLM fallback, and overland route planning combines curated route data with LLM-generated guidance for uncovered routes.
+
+**Parallel Agent Execution** -- Weather, overland transport, and hotel agents run simultaneously using Python asyncio, reducing total response time to the duration of the slowest single agent call.
 
 **A2A Context Handoff** -- Weather conditions and hotel location are passed directly to the Local Expert agent, ensuring the itinerary accounts for rain (no outdoor tours during storms) and proximity to accommodation.
 
@@ -69,10 +76,11 @@ The system gathers user requirements through natural conversation, dispatches ag
 |-------|-----------|---------|
 | Frontend | Next.js 14, React 18, Tailwind CSS | Chat interface with dark premium theme |
 | Backend | Python, FastAPI, Uvicorn | Async API server with multi-agent orchestration |
-| LLM | Google Gemini 2.0 Flash | Conversation handling, requirement extraction, itinerary generation |
+| LLM | Groq (`llama-3.1-8b-instant`) | Conversation handling, requirement extraction, itinerary generation |
 | Database | Supabase (PostgreSQL) | Conversation persistence, trip plan storage (JSONB) |
 | Weather | OpenWeatherMap API | 5-day forecasts, geocoding, climate estimates |
-| Flights & Hotels | Amadeus API | Real-time flight offers, hotel search and pricing |
+| Transport | Curated Pakistan route data + Groq fallback | Domestic motorway, bus, and self-drive planning |
+| Hotels | Foursquare Places API | Hotel discovery with PKR budget estimation |
 
 ---
 
@@ -82,25 +90,25 @@ The system gathers user requirements through natural conversation, dispatches ag
 
 - Python 3.10+
 - Node.js 18+
-- API keys for: Google Gemini, OpenWeatherMap, Amadeus
+- API keys for: Groq, OpenWeatherMap, Supabase, Foursquare
 
 ### 1. Clone and Configure
 
 ```bash
-git clone <repository-url>
-cd AI-Travel-Planner
+git clone https://github.com/Waqar-743/PlanPilot.git
+cd PlanPilot
 cp .env.example .env
 ```
 
 Edit `.env` with your API keys:
 
 ```env
-GEMINI_API_KEY=your_gemini_api_key
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=llama-3.1-8b-instant
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_ANON_KEY=your_supabase_anon_key
 OPENWEATHER_API_KEY=your_openweather_key
-AMADEUS_API_KEY=your_amadeus_key
-AMADEUS_API_SECRET=your_amadeus_secret
+FOURSQUARE_API_KEY=your_foursquare_key
 ```
 
 ### 2. Install Dependencies
@@ -145,7 +153,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ```json
 {
-  "message": "Plan a 3-day trip to Paris on a medium budget",
+  "message": "Plan a 3-day trip to Hunza from Islamabad on a medium budget",
   "conversation_id": null,
   "modality": "text"
 }
@@ -155,9 +163,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ```json
 {
-  "reply": "I'd love to help you plan your Paris trip! ...",
+  "reply": "I'd love to help you plan your Hunza trip! ...",
   "conversation_id": "uuid",
-  "travel_requirements": { "destination": "Paris", ... },
+  "travel_requirements": { "destination": "Hunza", ... },
   "phase": "gathering"
 }
 ```
@@ -172,11 +180,12 @@ AI-Travel-Planner/
 │   ├── agents/               # AI agent implementations
 │   │   ├── root_agent.py     # Orchestrator (phases 1-3)
 │   │   ├── weather_agent.py  # OpenWeatherMap integration
-│   │   ├── flight_agent.py   # Amadeus flight search
-│   │   ├── hotel_agent.py    # Amadeus hotel search
-│   │   └── local_expert_agent.py  # Itinerary builder
+│   │   ├── overland_transport_agent.py  # Domestic route planning
+│   │   ├── flight_agent.py   # Legacy fallback helper (bypassed in active flow)
+│   │   ├── hotel_agent.py    # Foursquare + LLM-backed stays
+│   │   └── local_expert_agent.py  # Pakistan itinerary builder
 │   ├── services/             # Shared services
-│   │   ├── gemini_service.py
+│   │   ├── llm_service.py
 │   │   ├── supabase_service.py
 │   │   └── output_formatter.py
 │   ├── models/schemas.py     # Pydantic models
@@ -200,7 +209,7 @@ AI-Travel-Planner/
 
 1. **User sends a message** describing their travel plans
 2. **Root Agent (Phase 1)** engages in conversation to collect destination, dates, origin, and budget
-3. **Root Agent (Phase 2)** dispatches Weather, Flight, and Hotel agents simultaneously
+3. **Root Agent (Phase 2)** dispatches Weather, Overland Transport, and Hotel agents simultaneously
 4. **A2A Handoff** passes weather and hotel data to the Local Expert for context-aware itinerary planning
 5. **Root Agent (Phase 3)** applies output formatting guardrails and delivers the complete plan
 6. **Follow-up questions** are handled by the Root Agent using the stored trip plan context
@@ -211,15 +220,37 @@ AI-Travel-Planner/
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `GEMINI_API_KEY` | Yes | Google AI Studio API key |
+| `GROQ_API_KEY` | Yes | Groq API key |
+| `GROQ_MODEL` | No | Groq chat model (default: `llama-3.1-8b-instant`) |
 | `SUPABASE_URL` | Yes | Supabase project URL |
 | `SUPABASE_ANON_KEY` | Yes | Supabase anonymous/public key |
 | `OPENWEATHER_API_KEY` | Yes | OpenWeatherMap API key |
-| `AMADEUS_API_KEY` | Yes | Amadeus for Developers API key |
-| `AMADEUS_API_SECRET` | Yes | Amadeus API secret |
+| `FOURSQUARE_API_KEY` | Yes | Foursquare Places API key |
+
+---
+
+## Recent Changes
+
+- Migrated the backend LLM integration from Gemini to **Groq**
+- Renamed `backend/services/gemini_service.py` to `backend/services/llm_service.py`
+- Switched the active trip-planning flow to **Pakistan domestic overland travel**
+- Kept the legacy `flight_agent.py` in compatibility mode, but live Amadeus calls are bypassed so they do not produce 401 noise
+- Standardized environment loading for `.env` and aligned runtime status reporting with the new Groq-backed stack
 
 ---
 
 ## License
 
-This project is for educational and demonstration purposes.
+This project is open source under the MIT License.
+
+You are welcome to use it anywhere, customize it, and ship your own version with proper attribution.
+
+See [LICENSE](LICENSE) for full terms.
+
+---
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Dopamine-Hit-ff6f3c?style=for-the-badge" alt="Dopamine sticker" />
+</p>
+
+<p align="center"><strong>Developed by Waqar with a dopamine hit.</strong></p>
