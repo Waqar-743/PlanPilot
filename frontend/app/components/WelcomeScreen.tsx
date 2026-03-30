@@ -1,12 +1,13 @@
 "use client";
 
 import {
-  PlaneTakeoff,
+  Bus,
   CloudSun,
   Hotel,
   MapPinned,
   ArrowRight,
   Shield,
+  Mountain,
 } from "lucide-react";
 
 interface WelcomeScreenProps {
@@ -15,42 +16,34 @@ interface WelcomeScreenProps {
 
 const suggestions = [
   {
-    icon: <PlaneTakeoff className="w-6 h-6" />,
-    title: "Weekend in Paris",
-    text: "Plan a 3-day trip to Paris on a medium budget",
-    gradient: "from-blue-500/20 to-indigo-500/20",
-    iconColor: "text-blue-400",
-    border: "hover:border-blue-500/30",
+    icon: <Mountain className="w-5 h-5" />,
+    num: "01",
+    title: "Northern Adventure",
+    text: "Plan a 5-day trip to Hunza Valley from Islamabad on a medium budget",
   },
   {
-    icon: <MapPinned className="w-6 h-6" />,
-    title: "Explore Tokyo",
-    text: "I want to explore Tokyo for a week in April",
-    gradient: "from-rose-500/20 to-pink-500/20",
-    iconColor: "text-rose-400",
-    border: "hover:border-rose-500/30",
+    icon: <MapPinned className="w-5 h-5" />,
+    num: "02",
+    title: "Historic Lahore",
+    text: "I want to explore Lahore for a weekend with street food and Mughal heritage",
   },
   {
-    icon: <Hotel className="w-6 h-6" />,
-    title: "Budget Bali",
-    text: "Find me a cheap 5-day trip to Bali from Mumbai",
-    gradient: "from-emerald-500/20 to-teal-500/20",
-    iconColor: "text-emerald-400",
-    border: "hover:border-emerald-500/30",
+    icon: <Hotel className="w-5 h-5" />,
+    num: "03",
+    title: "Budget Swat Trip",
+    text: "Find me a cheap 3-day trip to Swat Valley from Peshawar",
   },
   {
-    icon: <CloudSun className="w-6 h-6" />,
-    title: "Dubai Luxury",
-    text: "Plan a family trip to Dubai for 4 days, high budget",
-    gradient: "from-amber-500/20 to-orange-500/20",
-    iconColor: "text-amber-400",
-    border: "hover:border-amber-500/30",
+    icon: <CloudSun className="w-5 h-5" />,
+    num: "04",
+    title: "Coastal Gwadar",
+    text: "Plan a 4-day trip to Gwadar and the Makran Coast, high budget",
   },
 ];
 
 const features = [
   { icon: <CloudSun className="w-4 h-4" />, text: "Real-time Weather" },
-  { icon: <PlaneTakeoff className="w-4 h-4" />, text: "Live Flights" },
+  { icon: <Bus className="w-4 h-4" />, text: "Road Transport" },
   { icon: <Hotel className="w-4 h-4" />, text: "Hotel Search" },
   { icon: <Shield className="w-4 h-4" />, text: "Smart Guardrails" },
 ];
@@ -59,44 +52,44 @@ export default function WelcomeScreen({
   onSuggestionClick,
 }: WelcomeScreenProps) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
-      {/* Hero Text */}
-      <div className="text-center mb-14 animate-fade-in-up">
-        <h1 className="text-5xl font-extrabold text-white mb-4 tracking-tight leading-tight">
-          Where do you want to{" "}
-          <span className="gradient-text">explore</span>?
+    <div className="flex-1 flex flex-col items-center justify-center px-6 py-16">
+      {/* Hero */}
+      <div className="text-center mb-16 animate-fade-in-up">
+        <h1 className="font-display text-6xl md:text-7xl font-bold uppercase leading-[0.95] tracking-tight text-ink mb-6">
+          Travel Planning
+          <br />
+          <span className="text-accent">Made Simple</span>
         </h1>
-        <p className="text-slate-400 text-lg max-w-xl mx-auto leading-relaxed">
-          I plan your entire trip with real-time flights, hotels, weather
-          forecasts, and personalized daily itineraries -- all in seconds.
+        <p className="text-ink-muted text-base max-w-lg mx-auto leading-relaxed">
+          Your AI-powered Pakistan travel concierge. Plan trips with real-time
+          weather, motorway routes, bus services, hotels, and personalized
+          itineraries.
         </p>
       </div>
 
-      {/* Suggestion Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl w-full mb-12">
+      {/* Numbered Suggestion Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 max-w-4xl w-full mb-14 border border-black/[0.06] rounded-xl overflow-hidden">
         {suggestions.map((s, i) => (
           <button
             key={i}
             onClick={() => onSuggestionClick(s.text)}
-            className={`text-left p-5 rounded-2xl bg-gradient-to-br ${s.gradient} border border-white/[0.06] ${s.border} transition-all duration-200 group hover:-translate-y-[2px] hover:shadow-lg animate-fade-in-up`}
+            className={`text-left p-6 bg-cream-200/60 hover:bg-ink transition-all duration-200 group animate-fade-in-up ${
+              i < suggestions.length - 1
+                ? "border-r border-black/[0.06]"
+                : ""
+            }`}
             style={{ animationDelay: `${i * 80}ms` }}
           >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-3">
-                <span
-                  className={`${s.iconColor} transition-transform duration-200 group-hover:scale-110`}
-                >
-                  {s.icon}
-                </span>
-                <span className="text-[15px] font-bold text-slate-200 tracking-tight">
-                  {s.title}
-                </span>
-              </div>
-              <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400 transition-all group-hover:translate-x-0.5" />
-            </div>
-            <p className="text-[14px] text-slate-400 group-hover:text-slate-300 transition-colors leading-relaxed">
+            <span className="font-display text-3xl font-bold text-ink/15 group-hover:text-accent block mb-4 transition-colors">
+              {s.num}
+            </span>
+            <h3 className="font-display text-sm font-bold uppercase tracking-wide text-ink mb-2 group-hover:text-white transition-colors">
+              {s.title}
+            </h3>
+            <p className="text-xs text-ink-muted leading-relaxed group-hover:text-white/80 transition-colors">
               {s.text}
             </p>
+            <ArrowRight className="w-4 h-4 text-ink/20 group-hover:text-accent mt-4 transition-all group-hover:translate-x-1" />
           </button>
         ))}
       </div>
@@ -106,10 +99,12 @@ export default function WelcomeScreen({
         {features.map((f, i) => (
           <div
             key={i}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] text-slate-500"
+            className="flex items-center gap-2 px-4 py-2 rounded-full border border-black/[0.08] text-ink-muted bg-cream-50"
           >
-            <span className="text-indigo-400">{f.icon}</span>
-            <span className="text-[13px] font-medium">{f.text}</span>
+            <span className="text-accent">{f.icon}</span>
+            <span className="text-xs font-semibold uppercase tracking-wider">
+              {f.text}
+            </span>
           </div>
         ))}
       </div>

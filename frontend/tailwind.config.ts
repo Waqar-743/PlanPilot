@@ -8,28 +8,29 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: "#eff6ff",
-          100: "#dbeafe",
-          200: "#bfdbfe",
-          300: "#93c5fd",
-          400: "#60a5fa",
-          500: "#3b82f6",
-          600: "#2563eb",
-          700: "#1d4ed8",
-          800: "#1e40af",
-          900: "#1e3a8a",
+        cream: {
+          50: "#faf8f5",
+          100: "#f5f0ea",
+          200: "#ebe6e0",
+          300: "#e0dbd5",
+          400: "#d5d0ca",
+        },
+        ink: {
+          DEFAULT: "#1a1a1a",
+          light: "#2a2a2a",
+          muted: "#5a5550",
+          faint: "#8a8580",
         },
         accent: {
-          50: "#fdf4ff",
-          100: "#fae8ff",
-          200: "#f5d0fe",
-          300: "#f0abfc",
-          400: "#e879f9",
-          500: "#d946ef",
-          600: "#c026d3",
-          700: "#a21caf",
+          DEFAULT: "#c44b1a",
+          light: "#d4622f",
+          dark: "#a33d14",
+          bg: "rgba(196, 75, 26, 0.08)",
         },
+      },
+      fontFamily: {
+        display: ["var(--font-display)", "var(--font-body)", "sans-serif"],
+        body: ["var(--font-body)", "sans-serif"],
       },
     },
   },

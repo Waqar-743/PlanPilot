@@ -1,11 +1,23 @@
 import type { Metadata } from "next";
+import { Bebas_Neue, Inter } from "next/font/google";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-body",
+});
+
+const bebasNeue = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-display",
+});
+
 export const metadata: Metadata = {
-  title: "AI Travel Planner | Premium AI-Powered Trip Planning",
+  title: "PlanPilot AI | Pakistan Domestic Travel Concierge",
   description:
-    "Plan your perfect trip with AI-powered real-time flights, hotels, weather forecasts, and personalized daily itineraries.",
-  icons: { icon: "/favicon.ico" },
+    "Plan your perfect trip across Pakistan with AI-powered weather forecasts, transport routes, hotels, and personalized daily itineraries.",
+  icons: { icon: "/favicon.svg" },
 };
 
 export default function RootLayout({
@@ -14,20 +26,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="antialiased bg-mesh">{children}</body>
+    <html lang="en">
+      <body className={`${inter.variable} ${bebasNeue.variable} antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }

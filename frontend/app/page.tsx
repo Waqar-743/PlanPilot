@@ -22,7 +22,24 @@ interface Conversation {
   date: string;
 }
 
+interface ApiErrorResponse {
+  status?: string;
+  message?: string;
+  code?: string;
+}
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "";
+
+function normalizeConversations(items: Conversation[]): Conversation[] {
+  const seen = new Set<string>();
+
+  return items.filter((item) => {
+    const key = item.id?.trim();
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -34,14 +51,10 @@ export default function Home() {
   const [travelRequirements, setTravelRequirements] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // TTS hook
   const { isSpeaking, speakingId, toggle: toggleSpeech, stop: stopSpeech } =
     useTextToSpeech();
 
-  // STT hook -- onResult fires when speech is finalized
-  const handleVoiceResult = useCallback((text: string) => {
-    // We don't auto-send; user reviews transcript in input and hits send
-  }, []);
+  const handleVoiceResult = useCallback((text: string) => {}, []);
 
   const {
     isListening,
@@ -56,24 +69,42 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const loadConversations = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/conversations`);
+        if (res.ok) {
+          const data = await res.json();
+          setConversations(
+            normalizeConversations(
+              (data.conversations || []).map((c: any) => ({
+                id: c.id || "",
+                preview: c.preview || "Untitled trip",
+                date: c.date || "",
+              }))
+            )
+          );
+        }
+      } catch {}
+    };
+    loadConversations();
+  }, []);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
 
-  // Auto-read AI responses in voice mode
   const lastMessageRef = useRef<string | null>(null);
   useEffect(() => {
     if (modality === "voice" && messages.length > 0) {
       const last = messages[messages.length - 1];
       if (last.role === "assistant" && last.id !== lastMessageRef.current) {
         lastMessageRef.current = last.id;
-        // Small delay so UI renders first
         setTimeout(() => toggleSpeech(last.content, last.id), 300);
       }
     }
   }, [messages, modality, toggleSpeech]);
 
   const sendMessage = async (content: string) => {
-    // Stop any ongoing speech when user sends a message
     stopSpeech();
 
     const userMessage: Message = {
@@ -97,21 +128,35 @@ export default function Home() {
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to send message");
+      if (!response.ok) {
+        let errorMessage =
+          "I apologize, but I encountered a connection issue. Please try again in a moment.";
+
+        try {
+          const errorData: ApiErrorResponse = await response.json();
+          if (errorData?.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {}
+
+        throw new Error(errorMessage);
+      }
 
       const data = await response.json();
 
-      if (!conversationId) {
+      if (!conversationId && data.conversation_id) {
         setConversationId(data.conversation_id);
-        setConversations((prev) => [
-          {
-            id: data.conversation_id,
-            preview:
-              content.slice(0, 45) + (content.length > 45 ? "..." : ""),
-            date: new Date().toLocaleDateString(),
-          },
-          ...prev,
-        ]);
+        setConversations((prev) =>
+          normalizeConversations([
+            {
+              id: data.conversation_id,
+              preview:
+                content.slice(0, 45) + (content.length > 45 ? "..." : ""),
+              date: new Date().toLocaleDateString(),
+            },
+            ...prev,
+          ])
+        );
       }
 
       setPhase(data.phase || "gathering");
@@ -132,7 +177,9 @@ export default function Home() {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content:
-          "I apologize, but I encountered a connection issue. Please check that the backend server is running and try again.",
+          error instanceof Error
+            ? error.message
+            : "I apologize, but I encountered a connection issue. Please check that the backend server is running and try again.",
         timestamp: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -177,15 +224,15 @@ export default function Home() {
         onSelectConversation={handleSelectConversation}
       />
 
-      <main className="flex-1 flex flex-col h-screen min-w-0 bg-[#0a0c14]">
-        {/* Minimal Header */}
-        <header className="h-12 flex items-center justify-center px-5 border-b border-white/[0.03] flex-shrink-0">
-          <span className="text-[15px] font-semibold text-slate-200 tracking-tight">
-            TravelAI
+      <main className="flex-1 flex flex-col h-screen min-w-0 bg-cream-100">
+        {/* Header */}
+        <header className="h-14 flex items-center justify-between px-6 border-b border-black/[0.06] flex-shrink-0 bg-cream-50">
+          <span className="font-display text-lg font-bold uppercase tracking-wide text-ink">
+            PlanPilot
           </span>
           {phase === "delivered" && (
-            <span className="text-[12px] text-emerald-400/80 font-medium ml-2">
-              -- Plan Ready
+            <span className="text-xs font-semibold uppercase tracking-wider text-accent px-3 py-1 bg-accent-bg rounded-full">
+              Plan Ready
             </span>
           )}
         </header>

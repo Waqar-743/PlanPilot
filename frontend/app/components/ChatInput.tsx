@@ -29,7 +29,6 @@ export default function ChatInput({
   const [message, setMessage] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Sync transcript into the input field while listening
   useEffect(() => {
     if (isListening && transcript) {
       setMessage(transcript);
@@ -62,7 +61,6 @@ export default function ChatInput({
   const handleMicClick = () => {
     if (isListening) {
       onStopListening?.();
-      // Auto-send if we have transcript
       if (message.trim()) {
         setTimeout(() => handleSend(), 200);
       }
@@ -73,43 +71,42 @@ export default function ChatInput({
   };
 
   return (
-    <div className="px-4 pb-4 pt-2">
+    <div className="px-4 pb-4 pt-2 bg-cream-100">
       <div className="max-w-3xl mx-auto">
         {/* Listening indicator */}
         {isListening && (
           <div className="flex items-center justify-center gap-2 mb-2 animate-fade-in">
             <div className="flex gap-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
-              <div className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" style={{ animationDelay: "0.15s" }} />
-              <div className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" style={{ animationDelay: "0.3s" }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+              <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" style={{ animationDelay: "0.15s" }} />
+              <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" style={{ animationDelay: "0.3s" }} />
             </div>
-            <span className="text-[12px] text-rose-400 font-medium">
+            <span className="text-[12px] text-accent font-semibold">
               Listening... {transcript ? `"${transcript}"` : "speak now"}
             </span>
           </div>
         )}
 
-        {/* STT Error */}
         {sttError && (
-          <p className="text-center text-[11px] text-rose-400 mb-2">{sttError}</p>
+          <p className="text-center text-[11px] text-accent mb-2">{sttError}</p>
         )}
 
         {/* Input Container */}
         <div
-          className={`relative rounded-3xl border shadow-lg shadow-black/20 transition-all duration-200 ${
+          className={`relative rounded-2xl border transition-all duration-200 ${
             isListening
-              ? "bg-[#1a1d2e] border-rose-500/30 shadow-rose-500/5"
-              : "bg-[#1a1d2e] border-white/[0.06] focus-within:border-indigo-500/30 focus-within:shadow-indigo-500/5"
+              ? "bg-white border-accent/30 shadow-sm"
+              : "bg-white border-black/[0.08] focus-within:border-accent/30 shadow-sm"
           }`}
         >
           <div className="flex items-end gap-1 p-1.5 pl-4">
             {/* Modality Toggle */}
             <button
               onClick={onToggleModality}
-              className={`p-2 rounded-full transition-all duration-200 flex-shrink-0 mb-0.5 ${
+              className={`p-2 rounded-lg transition-all duration-200 flex-shrink-0 mb-0.5 ${
                 modality === "voice"
-                  ? "bg-rose-500/15 text-rose-400"
-                  : "text-slate-600 hover:text-slate-400 hover:bg-white/[0.05]"
+                  ? "bg-accent/10 text-accent"
+                  : "text-ink-faint hover:text-ink-muted hover:bg-black/[0.04]"
               }`}
               title={
                 modality === "voice"
@@ -131,22 +128,22 @@ export default function ChatInput({
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={
-                isListening ? "Listening..." : "Ask me to plan your trip..."
+                isListening ? "Listening..." : "Plan your trip across Pakistan..."
               }
               disabled={disabled || isListening}
               rows={1}
-              className="flex-1 bg-transparent py-2.5 px-2 text-[15px] text-white placeholder-slate-600 resize-none focus:outline-none disabled:opacity-40 leading-relaxed"
+              className="flex-1 bg-transparent py-2.5 px-2 text-[15px] text-ink placeholder-ink-faint/60 resize-none focus:outline-none disabled:opacity-40 leading-relaxed"
             />
 
-            {/* Mic Button (Speech-to-Text) */}
+            {/* Mic Button */}
             {onStartListening && (
               <button
                 onClick={handleMicClick}
                 disabled={disabled}
-                className={`p-2.5 rounded-full transition-all duration-200 flex-shrink-0 mb-0.5 ${
+                className={`p-2.5 rounded-lg transition-all duration-200 flex-shrink-0 mb-0.5 ${
                   isListening
-                    ? "bg-rose-500 text-white animate-pulse shadow-lg shadow-rose-500/30"
-                    : "text-slate-600 hover:text-slate-400 hover:bg-white/[0.05]"
+                    ? "bg-accent text-white animate-pulse"
+                    : "text-ink-faint hover:text-ink-muted hover:bg-black/[0.04]"
                 }`}
                 title={isListening ? "Stop listening" : "Voice input"}
               >
@@ -162,10 +159,10 @@ export default function ChatInput({
             <button
               onClick={handleSend}
               disabled={!message.trim() || disabled}
-              className={`p-2.5 rounded-full transition-all duration-200 flex-shrink-0 mb-0.5 ${
+              className={`p-2.5 rounded-lg transition-all duration-200 flex-shrink-0 mb-0.5 ${
                 message.trim() && !disabled
-                  ? "bg-indigo-500 text-white hover:bg-indigo-400 shadow-lg shadow-indigo-500/25"
-                  : "bg-white/[0.05] text-slate-700 cursor-not-allowed"
+                  ? "bg-ink text-white hover:bg-ink-light"
+                  : "bg-black/[0.04] text-ink-faint/40 cursor-not-allowed"
               }`}
             >
               <ArrowUp className="w-[18px] h-[18px]" strokeWidth={2.5} />
@@ -173,8 +170,8 @@ export default function ChatInput({
           </div>
         </div>
 
-        <p className="text-center text-[11px] text-slate-700 mt-2.5">
-          AI Travel Planner may produce inaccurate information. Verify details
+        <p className="text-center text-[11px] text-ink-faint mt-2.5">
+          PlanPilot AI may produce inaccurate information. Verify details
           before booking.
         </p>
       </div>

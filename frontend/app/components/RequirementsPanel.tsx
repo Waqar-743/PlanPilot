@@ -31,13 +31,13 @@ export default function RequirementsPanel({
       icon: <MapPin className="w-3.5 h-3.5" />,
       label: "Destination",
       value: requirements.destination,
-      color: "text-rose-400",
+      color: "text-accent",
     },
     {
       icon: <Navigation className="w-3.5 h-3.5" />,
       label: "Origin",
       value: requirements.origin,
-      color: "text-blue-400",
+      color: "text-ink",
     },
     {
       icon: <Calendar className="w-3.5 h-3.5" />,
@@ -46,7 +46,7 @@ export default function RequirementsPanel({
         requirements.start_date && requirements.end_date
           ? `${requirements.start_date} to ${requirements.end_date}`
           : null,
-      color: "text-amber-400",
+      color: "text-ink-muted",
     },
     {
       icon: <Wallet className="w-3.5 h-3.5" />,
@@ -55,25 +55,25 @@ export default function RequirementsPanel({
         ? requirements.budget_level.charAt(0).toUpperCase() +
           requirements.budget_level.slice(1)
         : null,
-      color: "text-emerald-400",
+      color: "text-ink-muted",
     },
   ];
 
   const allComplete = requirements.has_all_requirements;
 
   return (
-    <div className="glass rounded-xl p-4 mb-4 animate-fade-in-up">
+    <div className="bg-white border border-black/[0.06] rounded-xl p-4 mb-4 animate-fade-in-up">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.15em]">
+        <h3 className="font-display text-[11px] font-bold text-ink-muted uppercase tracking-[0.2em]">
           Trip Requirements
         </h3>
         {allComplete ? (
-          <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+          <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-2.5 py-1 rounded-full">
             <CheckCircle2 className="w-3 h-3" />
             Ready
           </span>
         ) : (
-          <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">
+          <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-ink-muted bg-black/[0.04] px-2.5 py-1 rounded-full">
             <Loader2 className="w-3 h-3 animate-spin" />
             Gathering
           </span>
@@ -84,27 +84,27 @@ export default function RequirementsPanel({
         {items.map((item, i) => (
           <div
             key={i}
-            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors ${
+            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg transition-colors ${
               item.value
-                ? "bg-white/[0.03] border border-white/[0.06]"
-                : "bg-transparent border border-dashed border-white/[0.06]"
+                ? "bg-cream-100 border border-black/[0.04]"
+                : "bg-transparent border border-dashed border-black/[0.08]"
             }`}
           >
-            <span className={item.value ? item.color : "text-slate-700"}>
+            <span className={item.value ? "text-accent" : "text-ink-faint/40"}>
               {item.value ? (
                 <CheckCircle2 className="w-3.5 h-3.5" />
               ) : (
                 <Circle className="w-3.5 h-3.5" />
               )}
             </span>
-            <span className={`${item.color} opacity-60`}>{item.icon}</span>
+            <span className={`${item.color} opacity-50`}>{item.icon}</span>
             <div className="min-w-0 flex-1">
-              <p className="text-[9px] text-slate-600 font-semibold uppercase tracking-wider">
+              <p className="text-[9px] text-ink-faint font-bold uppercase tracking-widest">
                 {item.label}
               </p>
               <p
                 className={`text-[12px] truncate ${
-                  item.value ? "text-slate-200 font-medium" : "text-slate-700"
+                  item.value ? "text-ink font-medium" : "text-ink-faint/40"
                 }`}
               >
                 {item.value || "Pending..."}
