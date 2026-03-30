@@ -1,8 +1,5 @@
 name: CI
 
-env:
-  FRONTEND_LIVE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
-
 on:
   push:
     branches: [main, master]
@@ -62,4 +59,4 @@ jobs:
       - name: Publish frontend live link
         run: |
           echo "### Frontend Live Link" >> "$GITHUB_STEP_SUMMARY"
-          echo "[Open PlanPilot Frontend]($FRONTEND_LIVE_URL)" >> "$GITHUB_STEP_SUMMARY"
+          echo "[Open PlanPilot Frontend](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/)" >> "$GITHUB_STEP_SUMMARY"
