@@ -2,7 +2,9 @@
   <img src="./Screen.png" alt="PlanPilot AI screenshot" width="900" />
 </p>
 
-
+<p align="center">
+  <a href="https://waqar-743.github.io/PlanPilot/"><strong>Live Frontend (GitHub Pages): waqar-743.github.io/PlanPilot</strong></a>
+</p>
 
 # PlanPilot
 
