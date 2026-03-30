@@ -241,8 +241,6 @@ AI-Travel-Planner/
 
 ## License
 
-This project is open source under the MIT License.
-
 You are welcome to use it anywhere, customize it, and ship your own version with proper attribution.
 
 See [LICENSE](LICENSE) for full terms.
