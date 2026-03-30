@@ -2,9 +2,7 @@
   <img src="./Screen.png" alt="PlanPilot AI screenshot" width="900" />
 </p>
 
-<p align="center">
-  <a href="https://planpilot.vercel.app"><strong>Live Frontend: planpilot.vercel.app</strong></a>
-</p>
+
 
 # PlanPilot
 
