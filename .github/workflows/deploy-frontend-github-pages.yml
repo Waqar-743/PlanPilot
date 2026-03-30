@@ -63,6 +63,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
       - name: Publish frontend live link
+        if: always()
         run: |
           echo "### Frontend Live Link" >> "$GITHUB_STEP_SUMMARY"
           echo "[Open PlanPilot Frontend]($GH_PAGES_URL)" >> "$GITHUB_STEP_SUMMARY"
