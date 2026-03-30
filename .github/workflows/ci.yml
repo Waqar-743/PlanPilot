@@ -1,5 +1,8 @@
 name: CI
 
+env:
+  FRONTEND_LIVE_URL: https://planpilot.vercel.app
+
 on:
   push:
     branches: [main, master]
@@ -55,3 +58,8 @@ jobs:
 
       - name: Build frontend
         run: npm run build
+
+      - name: Publish frontend live link
+        run: |
+          echo "### Frontend Live Link" >> "$GITHUB_STEP_SUMMARY"
+          echo "[Open PlanPilot Frontend]($FRONTEND_LIVE_URL)" >> "$GITHUB_STEP_SUMMARY"
